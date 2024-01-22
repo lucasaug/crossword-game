@@ -1,11 +1,11 @@
 export interface GridPosition {
-    x: number | null,
-    y: number | null,
+    x: number,
+    y: number,
 };
 
 export enum Direction {
-    Vertical = 1,
-    Horizontal
+    VERTICAL = 1,
+    HORIZONTAL
 }
 
 export interface CrosswordEntry {
@@ -20,4 +20,17 @@ export interface CrosswordDefinition {
     width: number,
     height: number,
 };
+
+export type EmptyCell = {}
+
+export type ClueCell = {
+    horizontal?: number,
+    vertical?: number
+}
+
+export type LetterCell = {
+    value: string
+}
+
+export type Cell = EmptyCell | ClueCell | LetterCell
 
