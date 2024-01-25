@@ -1,10 +1,10 @@
-import CrosswordGrid from "./CrosswordGrid";
-import { Direction } from './CrosswordDefinition.tsx'
+import { CrosswordGrid } from "./CrosswordGrid";
+import { Direction } from "./CrosswordData";
 
 export default function App() {
     return (
-    <CrosswordGrid definition={{
-        entries: [{
+    <CrosswordGrid entries={
+        [{
             value: "a",
             clue: "a",
             startPosition: {
@@ -12,10 +12,9 @@ export default function App() {
                 y: 2
             },
             direction: Direction.VERTICAL,
-        }],
-        width: 10,
-        height: 10,
-        }}
-    />
+        }]}
+        width={10}
+        height={10}
+        />
     );
 }

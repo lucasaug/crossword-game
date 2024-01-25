@@ -1,31 +1,53 @@
 import { useReducer, useState } from 'react';
-import {
-    CrosswordDefinition, GridPosition, Direction, Cell
-} from './CrosswordDefinition.tsx'
+
+import { Direction } from './CrosswordData';
+import { CellData, isClueCell, isLetterCell } from './CellData';
+
+import { ClueCell, EmptyCell, LetterCell } from './Cell';
+
+interface GridPosition {
+    x: number,
+    y: number,
+};
+
+interface CrosswordEntry {
+    value: string,
+    clue: string,
+    startPosition: GridPosition,
+    direction: Direction,
+};
 
 interface CrosswordGridProps {
-    definition: CrosswordDefinition,
+    entries: CrosswordEntry[],
+    width: number,
+    height: number,
 }
 
-function createInitialGrid(definition: CrosswordDefinition): Cell[][] {
-    let gridArray: Cell[][] = [];
-    for (let i = 0; i < definition.height; i++) {
-        gridArray.push(Array(definition.width));
-        for (let j = 0; j < definition.width; j++) {
+function createInitialGrid(props: CrosswordGridProps): CellData[][] {
+    let gridArray: CellData[][] = [];
+    for (let i = 0; i < props.height; i++) {
+        gridArray.push(Array(props.width));
+        for (let j = 0; j < props.width; j++) {
             gridArray[i][j] = {};
         }
     }
 
     let horizontalCount = 0, verticalCount = 0;
-    for (const entry of definition.entries) {
+    for (const entry of props.entries) {
         let x = entry.startPosition.x;
         let y = entry.startPosition.y;
 
         if (entry.direction == Direction.VERTICAL) {
-            gridArray[x][y]["vertical"] = verticalCount;
+            gridArray[x][y] = {
+                ...gridArray[x][y],
+                vertical: verticalCount
+            }
             verticalCount++;
         } else {
-            gridArray[x][y]["horizontal"] = horizontalCount;
+            gridArray[x][y] = {
+                ...gridArray[x][y],
+                horizontal: horizontalCount
+            }
             horizontalCount++;
         }
     }
@@ -33,7 +55,7 @@ function createInitialGrid(definition: CrosswordDefinition): Cell[][] {
     return gridArray;
 }
 
-function updateGrid(state: Cell[][], action): Cell[][] {
+function updateGrid(state: CellData[][], action): CellData[][] {
     let result = [];
     for (let row of state) {
         result.push([...row]);
@@ -42,38 +64,44 @@ function updateGrid(state: Cell[][], action): Cell[][] {
     return result
 }
 
-export default function CrosswordGrid({ definition }: CrosswordGridProps) {
-    const [gridArray, dispatch] = useReducer(
-        updateGrid, definition, createInitialGrid
-    );
+const GridStyle = {
+    border: "solid",
+    display: "inline",
+}
 
-    const [selectedPosition, setSelectedPosition] = useState<GridPosition>({
-        x: null,
-        y: null,
-    });
+
+export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
+    const [gridArray, dispatch] = useReducer(
+        updateGrid, { entries, width, height }, createInitialGrid
+    );
 
     const [direction, setDirection] = useState<Direction>(Direction.VERTICAL);
 
     return (
-    <table><tbody>
+    <div style={GridStyle}>
         {
         gridArray.map((row, i) => (
-            <tr key={i}>
+            <div key={i}>
             {
-                row.map((cell, j) => {
-                    if ("horizontal" in cell || "vertical" in cell) {
-                        return <td key={i + ' ' + j}>{cell["horizontal"] + " & " + cell["vertical"]}</td>
-                    } else if ("value" in cell) {
-                        return <td key={i + ' ' + j}>{cell["value"]}</td>
+                row.map((cellData, j) => {
+                    if (isClueCell(cellData)) {
+                        return <ClueCell key={j}
+                            horizontal={cellData.horizontal}
+                            vertical={cellData.vertical}
+                        />
+                    } else if (isLetterCell(cellData)) {
+                        return <LetterCell key={j}
+                            value={cellData.value}
+                        />
                     } else {
-                        return <td key={i + ' ' + j}>X</td>
+                        return <EmptyCell key={j} />
                     }
                 })
             }
-            </tr>
+               <br />
+            </div>
         ))
         }
-        </tbody>
-    </table>
+    </div>
     );
 }
