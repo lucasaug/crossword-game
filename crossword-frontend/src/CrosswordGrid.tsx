@@ -1,9 +1,20 @@
 import { useReducer, useState } from 'react';
 
-import { Direction } from './CrosswordData';
-import { CellData, isClueCell, isLetterCell } from './CellData';
 
-import { ClueCell, EmptyCell, LetterCell } from './Cell';
+import {
+    CellData,
+    isClueCell,
+    isLetterCell,
+    ClueCell,
+    EmptyCell,
+    LetterCell
+} from './Cell';
+
+export enum Direction {
+    VERTICAL = 1,
+    HORIZONTAL
+}
+
 
 interface GridPosition {
     x: number,
@@ -51,6 +62,8 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
             horizontalCount++;
         }
     }
+
+    gridArray[5][5] = { value: 'L' }
 
     return gridArray;
 }
