@@ -1,14 +1,18 @@
 import { useState } from "react";
 
-export interface EmptyCellData {}
+export interface EmptyCellData {
+    style?: Object
+}
 
 export interface ClueCellData {
     horizontal?: number,
-    vertical?: number
+    vertical?: number,
+    style?: Object
 }
 
 export interface LetterCellData {
-    value: string
+    value: string,
+    style?: Object
 }
 
 export type CellData = EmptyCellData | ClueCellData | LetterCellData
@@ -27,39 +31,37 @@ export function isLetterCell(cellData: CellData): cellData is LetterCellData {
     return castData.value !== undefined;
 }
 
-const CellStyle = {
-    border: "solid",
-    padding: 20,
-    display: "inline-block",
-    width: "25px",
-    height: "25px",
+const ClueCellStyle = {
+    backgroundColor: "white",
 }
 
 const EmptyCellStyle = {
     backgroundColor: "black",
-    borderColor: "white",
+}
+
+const LetterCellStyle = {
+    backgroundColor: "white",
 }
 
 
-export function ClueCell({ horizontal, vertical }: ClueCellData) {
+export function ClueCell({ horizontal, vertical, style }: ClueCellData) {
     return (
-    <div style={CellStyle}>
-        C
+    <div style={{...style, ...ClueCellStyle}}>
+        h: {horizontal}, v: {vertical}
     </div>
     )
 }
 
-export function EmptyCell() {
+export function EmptyCell({ style }: EmptyCellData) {
     return (
-    <div style={{...CellStyle, ...EmptyCellStyle}}>
-        .
+    <div style={{...style, ...EmptyCellStyle}}>
     </div>
     )
 }
 
-export function LetterCell({ value }: LetterCellData) {
+export function LetterCell({ value, style }: LetterCellData) {
     return (
-    <div style={CellStyle}>
+    <div style={{...style, ...LetterCellStyle}}>
         { value }
     </div>
     )

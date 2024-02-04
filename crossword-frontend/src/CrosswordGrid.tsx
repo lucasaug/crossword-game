@@ -34,6 +34,24 @@ interface CrosswordGridProps {
     height: number,
 }
 
+function fillWord(gridArray: CellData[][], entry: CrosswordEntry) {
+    let x = entry.startPosition.x;
+    let y = entry.startPosition.y;
+
+    for (let i = 0; i < entry.value.length; i++) {
+        if (entry.direction == Direction.VERTICAL) {
+            x++;
+        } else {
+            y++;
+        }
+
+        gridArray[x][y] = {
+            ...gridArray[x][y],
+            value: ' '
+        }
+    }
+}
+
 function createInitialGrid(props: CrosswordGridProps): CellData[][] {
     let gridArray: CellData[][] = [];
     for (let i = 0; i < props.height; i++) {
@@ -61,9 +79,9 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
             }
             horizontalCount++;
         }
-    }
 
-    gridArray[5][5] = { value: 'L' }
+        fillWord(gridArray, entry);
+    }
 
     return gridArray;
 }
@@ -77,11 +95,6 @@ function updateGrid(state: CellData[][], action): CellData[][] {
     return result
 }
 
-const GridStyle = {
-    border: "solid",
-    display: "inline",
-}
-
 
 export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
     const [gridArray, dispatch] = useReducer(
@@ -90,29 +103,37 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
 
     const [direction, setDirection] = useState<Direction>(Direction.VERTICAL);
 
+    const GridStyle = {
+        backgroundColor: "black",
+        display: "inline-grid",
+        gridTemplateRows: "40px ".repeat(width),
+        gridTemplateColumns: "40px ".repeat(height),
+        gap:"1px"
+    }
+
     return (
     <div style={GridStyle}>
         {
         gridArray.map((row, i) => (
-            <div key={i}>
-            {
                 row.map((cellData, j) => {
+                    const key = `${i} ${j}`
                     if (isClueCell(cellData)) {
-                        return <ClueCell key={j}
+                        return <ClueCell key={key}
                             horizontal={cellData.horizontal}
                             vertical={cellData.vertical}
+                            style={{ gridRow: i+1, gridColumn: j+1 }}
                         />
                     } else if (isLetterCell(cellData)) {
-                        return <LetterCell key={j}
+                        return <LetterCell key={key}
                             value={cellData.value}
+                            style={{ gridRow: i+1, gridColumn: j+1 }}
                         />
                     } else {
-                        return <EmptyCell key={j} />
+                        return <EmptyCell key={key}
+                            style={{ gridRow: i+1, gridColumn: j+1 }}
+                        />
                     }
                 })
-            }
-               <br />
-            </div>
         ))
         }
     </div>
