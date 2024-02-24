@@ -1,5 +1,4 @@
-import { useReducer, useState } from 'react';
-
+import { useEffect, useReducer, useState } from 'react';
 
 import {
     CellData,
@@ -7,14 +6,14 @@ import {
     isLetterCell,
     ClueCell,
     EmptyCell,
-    LetterCell
+    LetterCell,
+    LetterCellData
 } from './Cell';
 
 export enum Direction {
     VERTICAL = 1,
     HORIZONTAL
 }
-
 
 interface GridPosition {
     x: number,
@@ -32,7 +31,20 @@ interface CrosswordGridProps {
     entries: CrosswordEntry[],
     width: number,
     height: number,
-}
+};
+
+enum GridActionType {
+    KEY_PRESS = "KEY_PRESS",
+};
+
+type GridKeyAction = {
+    type: typeof GridActionType.KEY_PRESS,
+    key: string,
+    x: number,
+    y: number,
+};
+
+type GridAction = GridKeyAction;
 
 function fillWord(gridArray: CellData[][], entry: CrosswordEntry) {
     let x = entry.startPosition.x;
@@ -86,10 +98,16 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
     return gridArray;
 }
 
-function updateGrid(state: CellData[][], action): CellData[][] {
+function updateGrid(state: CellData[][], action: GridAction): CellData[][] {
     let result = [];
     for (let row of state) {
         result.push([...row]);
+    }
+
+    let cell = result[action.x][action.y];
+    if (isLetterCell(cell)) {
+        let letterCell = cell as LetterCellData;
+        letterCell.value = action.key;
     }
 
     return result
@@ -102,6 +120,7 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
     );
 
     const [direction, setDirection] = useState<Direction>(Direction.VERTICAL);
+    const [position, setPosition] = useState<GridPosition>({ x: 4, y: 4 });
 
     const GridStyle = {
         backgroundColor: "black",
@@ -111,29 +130,52 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
         gap:"1px"
     }
 
+    useEffect(() => {
+        const keyDownHandler = (event: KeyboardEvent) => {
+            const isLetter = (64 < event.keyCode && event.keyCode < 91) ||
+                (96 < event.keyCode && event.keyCode < 123);
+
+            if (isLetter) {
+                const action = {
+                    key: event.key,
+                    type: GridActionType.KEY_PRESS,
+                    x: position.x,
+                    y: position.y,
+                };
+                dispatch(action);
+            }
+        };
+
+        document.addEventListener("keydown", keyDownHandler);
+
+        return () => {
+            document.removeEventListener("keydown", keyDownHandler);
+        };
+    }, []);
+
     return (
     <div style={GridStyle}>
         {
         gridArray.map((row, i) => (
-                row.map((cellData, j) => {
-                    const key = `${i} ${j}`
-                    if (isClueCell(cellData)) {
-                        return <ClueCell key={key}
-                            horizontal={cellData.horizontal}
-                            vertical={cellData.vertical}
-                            style={{ gridRow: i+1, gridColumn: j+1 }}
-                        />
-                    } else if (isLetterCell(cellData)) {
-                        return <LetterCell key={key}
-                            value={cellData.value}
-                            style={{ gridRow: i+1, gridColumn: j+1 }}
-                        />
-                    } else {
-                        return <EmptyCell key={key}
-                            style={{ gridRow: i+1, gridColumn: j+1 }}
-                        />
-                    }
-                })
+            row.map((cellData, j) => {
+                const key = `${i} ${j}`
+                if (isClueCell(cellData)) {
+                    return <ClueCell key={key}
+                        horizontal={cellData.horizontal}
+                        vertical={cellData.vertical}
+                        style={{ gridRow: i+1, gridColumn: j+1 }}
+                    />
+                } else if (isLetterCell(cellData)) {
+                    return <LetterCell key={key}
+                        value={cellData.value}
+                        style={{ gridRow: i+1, gridColumn: j+1 }}
+                    />
+                } else {
+                    return <EmptyCell key={key}
+                        style={{ gridRow: i+1, gridColumn: j+1 }}
+                    />
+                }
+            })
         ))
         }
     </div>
