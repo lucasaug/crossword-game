@@ -1,21 +1,32 @@
-import { useState } from "react";
+import { MouseEventHandler } from "react";
+
+export interface GridPosition {
+    x: number,
+    y: number,
+};
 
 export interface EmptyCellData {
-    style?: Object
+    style?: Object,
+    onClick?: MouseEventHandler,
 }
 
 export interface ClueCellData {
     horizontal?: number,
     vertical?: number,
-    style?: Object
+    style?: Object,
+    onClick?: MouseEventHandler,
 }
 
 export interface LetterCellData {
     value: string,
-    style?: Object
+    isVertical: boolean,
+    isHorizontal: boolean,
+    style?: Object,
+    highlighted?: boolean,
+    onClick?: MouseEventHandler,
 }
 
-export type CellData = EmptyCellData | ClueCellData | LetterCellData
+export type CellData = EmptyCellData | ClueCellData | LetterCellData;
 
 export function isEmptyCell(cellData: CellData): cellData is EmptyCellData {
     return !isLetterCell(cellData) && !isClueCell(cellData);
@@ -43,25 +54,44 @@ const LetterCellStyle = {
     backgroundColor: "white",
 }
 
+const HighlightedCellStyle = {
+    backgroundColor: "yellow",
+}
 
-export function ClueCell({ horizontal, vertical, style }: ClueCellData) {
+
+export function ClueCell({
+    horizontal,
+    vertical,
+    style,
+    onClick,
+}: ClueCellData) {
     return (
-    <div style={{...style, ...ClueCellStyle}}>
+    <div style={{...style, ...ClueCellStyle }} onClick={ onClick }>
         h: {horizontal}, v: {vertical}
     </div>
     )
 }
 
-export function EmptyCell({ style }: EmptyCellData) {
+export function EmptyCell({ style, onClick }: EmptyCellData) {
     return (
-    <div style={{...style, ...EmptyCellStyle}}>
+    <div style={{...style, ...EmptyCellStyle}} onClick={ onClick }>
     </div>
     )
 }
 
-export function LetterCell({ value, style }: LetterCellData) {
+export function LetterCell({
+    value,
+    style,
+    highlighted,
+    onClick,
+}: LetterCellData) {
+    let cellStyle = {...style, ...LetterCellStyle};
+    if (highlighted) {
+        cellStyle = {...style, ...HighlightedCellStyle}
+    }
+
     return (
-    <div style={{...style, ...LetterCellStyle}}>
+    <div style={cellStyle} onClick={ onClick }>
         { value }
     </div>
     )

@@ -1,5 +1,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
+import { GridPosition } from './Cell.tsx';
+
 import {
     CellData,
     isClueCell,
@@ -14,11 +16,6 @@ export enum Direction {
     VERTICAL = 1,
     HORIZONTAL
 }
-
-interface GridPosition {
-    x: number,
-    y: number,
-};
 
 interface CrosswordEntry {
     value: string,
@@ -132,8 +129,8 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
 
     useEffect(() => {
         const keyDownHandler = (event: KeyboardEvent) => {
-            const isLetter = (64 < event.keyCode && event.keyCode < 91) ||
-                (96 < event.keyCode && event.keyCode < 123);
+            const isLetter = event.key.length == 1 &&
+                event.key[0].match(/[a-z]/i);
 
             if (isLetter) {
                 const action = {
@@ -143,6 +140,12 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
                     y: position.y,
                 };
                 dispatch(action);
+                if (direction == Direction.HORIZONTAL && position.x < width - 1) {
+                    setPosition({ x: position.x + 1, y: position.y })
+                }
+                if (direction == Direction.VERTICAL && position.y < height - 1) {
+                    setPosition({ x: position.x, y: position.y + 1 })
+                }
             }
         };
 
@@ -151,7 +154,13 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
         return () => {
             document.removeEventListener("keydown", keyDownHandler);
         };
-    }, []);
+    }, [position]);
+
+    function clickCallback({ x, y }: GridPosition ) {
+        return () => {
+            setPosition({ x: x, y: y })
+        };
+    }
 
     return (
     <div style={GridStyle}>
@@ -164,15 +173,19 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
                         horizontal={cellData.horizontal}
                         vertical={cellData.vertical}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
+                        onClick={ clickCallback({ x: i, y: j}) }
                     />
                 } else if (isLetterCell(cellData)) {
                     return <LetterCell key={key}
                         value={cellData.value}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
+                        highlighted={ i == position.x && j == position.y }
+                        onClick={ clickCallback({ x: i, y: j}) }
                     />
                 } else {
                     return <EmptyCell key={key}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
+                        onClick={ clickCallback({ x: i, y: j}) }
                     />
                 }
             })
