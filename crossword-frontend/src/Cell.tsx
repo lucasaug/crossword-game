@@ -1,9 +1,14 @@
-import { MouseEventHandler } from "react";
+import { CSSProperties, MouseEventHandler } from "react";
 
 export interface GridPosition {
     x: number,
     y: number,
 };
+
+export enum Direction {
+    VERTICAL = 1,
+    HORIZONTAL
+}
 
 export interface EmptyCellData {
     style?: Object,
@@ -19,8 +24,9 @@ export interface ClueCellData {
 
 export interface LetterCellData {
     value: string,
-    isVertical: boolean,
-    isHorizontal: boolean,
+    isVertical?: boolean,
+    isHorizontal?: boolean,
+    currentDirection?: Direction,
     style?: Object,
     highlighted?: boolean,
     onClick?: MouseEventHandler,
@@ -44,18 +50,33 @@ export function isLetterCell(cellData: CellData): cellData is LetterCellData {
 
 const ClueCellStyle = {
     backgroundColor: "white",
+    border: "solid 1px black",
+    position: "relative",
+    borderRadius: "10px",
 }
 
 const EmptyCellStyle = {
-    backgroundColor: "black",
+    backgroundColor: "#7755CC",
+    borderRadius: "10px"
 }
 
 const LetterCellStyle = {
-    backgroundColor: "white",
+    backgroundColor: "#EEEEFF",
+    borderRadius: "10px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
+    fontFamily: "sans-serif",
 }
 
 const HighlightedCellStyle = {
-    backgroundColor: "yellow",
+    backgroundColor: "#EEEE77",
+}
+
+const DirectionArrowStyle = {
+    position: "relative",
+    fontSize: "0.5em",
 }
 
 
@@ -65,9 +86,26 @@ export function ClueCell({
     style,
     onClick,
 }: ClueCellData) {
+    let horizontalIndicator = <span style={{
+        ...DirectionArrowStyle,
+        position: "absolute",
+        right: "5px",
+    }}>
+        { horizontal !== undefined ? `${horizontal} ▸` : "" }
+    </span>;
+    let verticalIndicator = <span style={{
+        ...DirectionArrowStyle,
+        position: "absolute",
+        bottom: "0px",
+        right: "5px",
+    }}>
+        { vertical !== undefined ? `${vertical} ▾` : "" }
+    </span>;
+
     return (
     <div style={{...style, ...ClueCellStyle }} onClick={ onClick }>
-        h: {horizontal}, v: {vertical}
+        {horizontalIndicator}
+        {verticalIndicator}
     </div>
     )
 }
@@ -83,16 +121,29 @@ export function LetterCell({
     value,
     style,
     highlighted,
+    currentDirection,
     onClick,
 }: LetterCellData) {
-    let cellStyle = {...style, ...LetterCellStyle};
+    let cellStyle: CSSProperties = {...style, ...LetterCellStyle};
+        let arrowStyle: CSSProperties = {...DirectionArrowStyle};
+
     if (highlighted) {
-        cellStyle = {...style, ...HighlightedCellStyle}
+        cellStyle = {...cellStyle, ...HighlightedCellStyle}
+        if (currentDirection == Direction.HORIZONTAL)
+            arrowStyle["left"] = "20%";
+        else
+            arrowStyle["top"] = "20%";
     }
 
     return (
     <div style={cellStyle} onClick={ onClick }>
         { value }
+        <span style={arrowStyle}>
+            { highlighted ?
+                    (currentDirection == Direction.HORIZONTAL ? "▸" : "▾") :
+                ""
+            }
+        </span>
     </div>
     )
 }

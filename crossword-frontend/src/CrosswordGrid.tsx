@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from 'react';
 
-import { GridPosition } from './Cell.tsx';
+import { Direction, GridPosition } from './Cell.tsx';
 
 import {
     CellData,
@@ -11,11 +11,6 @@ import {
     LetterCell,
     LetterCellData
 } from './Cell';
-
-export enum Direction {
-    VERTICAL = 1,
-    HORIZONTAL
-}
 
 interface CrosswordEntry {
     value: string,
@@ -48,15 +43,20 @@ function fillWord(gridArray: CellData[][], entry: CrosswordEntry) {
     let y = entry.startPosition.y;
 
     for (let i = 0; i < entry.value.length; i++) {
+        let directionInfo: { isHorizontal?: boolean, isVertical?: boolean } =
+            {};
         if (entry.direction == Direction.VERTICAL) {
             x++;
+            directionInfo["isVertical"] = true;
         } else {
             y++;
+            directionInfo["isHorizontal"] = true;
         }
 
         gridArray[x][y] = {
             ...gridArray[x][y],
-            value: ' '
+            ...directionInfo,
+            value: ' ',
         }
     }
 }
@@ -102,14 +102,15 @@ function updateGrid(state: CellData[][], action: GridAction): CellData[][] {
     }
 
     let cell = result[action.x][action.y];
+    const isLetter = action.key.length == 1 && action.key[0].match(/[a-z]/i);
     if (isLetterCell(cell)) {
         let letterCell = cell as LetterCellData;
-        letterCell.value = action.key;
+        if (isLetter) letterCell.value = action.key.toUpperCase();
+        else letterCell.value = " ";
     }
 
     return result
 }
-
 
 export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
     const [gridArray, dispatch] = useReducer(
@@ -120,31 +121,63 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
     const [position, setPosition] = useState<GridPosition>({ x: 4, y: 4 });
 
     const GridStyle = {
-        backgroundColor: "black",
+        padding: "5px",
+        backgroundColor: "white",
         display: "inline-grid",
-        gridTemplateRows: "40px ".repeat(width),
-        gridTemplateColumns: "40px ".repeat(height),
-        gap:"1px"
+        gridTemplateRows: "60px ".repeat(width),
+        gridTemplateColumns: "60px ".repeat(height),
+        gap:"5px",
+        fontSize: "32px",
     }
 
     useEffect(() => {
         const keyDownHandler = (event: KeyboardEvent) => {
             const isLetter = event.key.length == 1 &&
                 event.key[0].match(/[a-z]/i);
+            const isBackspace = event.key == "Backspace";
+            const isDelete = event.key == "Delete";
 
-            if (isLetter) {
+            const {x, y} = position;
+
+            if (isLetter || isBackspace || isDelete) {
                 const action = {
                     key: event.key,
                     type: GridActionType.KEY_PRESS,
-                    x: position.x,
-                    y: position.y,
+                    x: x,
+                    y: y,
                 };
                 dispatch(action);
-                if (direction == Direction.HORIZONTAL && position.x < width - 1) {
-                    setPosition({ x: position.x + 1, y: position.y })
-                }
-                if (direction == Direction.VERTICAL && position.y < height - 1) {
-                    setPosition({ x: position.x, y: position.y + 1 })
+
+                if (isLetter) {
+                    if (
+                        direction == Direction.VERTICAL &&
+                        position.x < width - 1 &&
+                        isLetterCell(gridArray[x + 1][y])
+                    ) {
+                        setPosition({ x: position.x + 1, y: position.y })
+                    }
+                    if (
+                        direction == Direction.HORIZONTAL &&
+                        position.y < height - 1 &&
+                        isLetterCell(gridArray[x][y + 1])
+                    ) {
+                        setPosition({ x: position.x, y: position.y + 1 })
+                    }
+                } else if (isBackspace) {
+                    if (
+                        direction == Direction.VERTICAL &&
+                        position.x > 0 &&
+                        isLetterCell(gridArray[x - 1][y])
+                    ) {
+                        setPosition({ x: position.x - 1, y: position.y })
+                    }
+                    if (
+                        direction == Direction.HORIZONTAL &&
+                        position.y > 0 &&
+                        isLetterCell(gridArray[x][y - 1])
+                    ) {
+                        setPosition({ x: position.x, y: position.y - 1 })
+                    }
                 }
             }
         };
@@ -154,11 +187,25 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
         return () => {
             document.removeEventListener("keydown", keyDownHandler);
         };
-    }, [position]);
+    }, [position, direction]);
 
     function clickCallback({ x, y }: GridPosition ) {
         return () => {
-            setPosition({ x: x, y: y })
+            let cell = gridArray[x][y];
+            if (isLetterCell(cell)) {
+                if (position.x != x || position.y != y) {
+                    setPosition({ x: x, y: y })
+                    if (cell.isHorizontal) setDirection(Direction.HORIZONTAL);
+                    else if (cell.isVertical) setDirection(Direction.VERTICAL);
+                } else {
+                    if (cell.isHorizontal && cell.isVertical) {
+                        if (direction == Direction.HORIZONTAL)
+                            setDirection(Direction.VERTICAL);
+                        else
+                            setDirection(Direction.HORIZONTAL);
+                    }
+                }
+            }
         };
     }
 
@@ -180,6 +227,10 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
                         value={cellData.value}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
                         highlighted={ i == position.x && j == position.y }
+                        currentDirection={
+                            (i == position.x && j == position.y) ?
+                                direction : undefined
+                        }
                         onClick={ clickCallback({ x: i, y: j}) }
                     />
                 } else {

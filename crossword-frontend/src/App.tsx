@@ -1,4 +1,5 @@
-import { CrosswordGrid, Direction } from "./CrosswordGrid";
+import { CrosswordGrid } from "./CrosswordGrid";
+import { Direction } from "./Cell";
 
 export default function App() {
     return (
@@ -21,6 +22,15 @@ export default function App() {
                     y: 4
                 },
                 direction: Direction.VERTICAL,
+            },
+            {
+                value: "sopa",
+                clue: "molhim de toma hmm",
+                startPosition: {
+                    x: 0,
+                    y: 4
+                },
+                direction: Direction.HORIZONTAL,
             },
             {
                 value: "ciencia",
