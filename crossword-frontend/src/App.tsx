@@ -1,49 +1,18 @@
 import { CrosswordGrid } from "./CrosswordGrid";
-import { Direction } from "./Cell";
+import { useEffect, useState } from "react";
+
+const CROSSWORD_PATH: string = "http://localhost:4567/crossword/new";
 
 export default function App() {
+    const [entries, setEntries] = useState([]);
+
+    useEffect(() => {
+        fetch(CROSSWORD_PATH)
+        .then(res => res.json())
+        .then(setEntries)
+    }, []);
+
     return (
-        <CrosswordGrid entries={
-        [
-            {
-                value: "lucas",
-                clue: "quem fez iss",
-                startPosition: {
-                    x: 2,
-                    y: 2
-                },
-                direction: Direction.HORIZONTAL,
-            },
-            {
-                value: "lupa",
-                clue: "negoç de aumentar a vista",
-                startPosition: {
-                    x: 0,
-                    y: 4
-                },
-                direction: Direction.VERTICAL,
-            },
-            {
-                value: "sopa",
-                clue: "molhim de toma hmm",
-                startPosition: {
-                    x: 0,
-                    y: 4
-                },
-                direction: Direction.HORIZONTAL,
-            },
-            {
-                value: "ciencia",
-                clue: "negoç de estuda os negoç",
-                startPosition: {
-                    x: 6,
-                    y: 0
-                },
-                direction: Direction.HORIZONTAL,
-            },
-        ]}
-        width={10}
-        height={10}
-        />
+        <CrosswordGrid entries={entries} width={10} height={10} />
     );
 }

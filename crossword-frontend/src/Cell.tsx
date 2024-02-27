@@ -125,7 +125,7 @@ export function LetterCell({
     onClick,
 }: LetterCellData) {
     let cellStyle: CSSProperties = {...style, ...LetterCellStyle};
-        let arrowStyle: CSSProperties = {...DirectionArrowStyle};
+    let arrowStyle: CSSProperties = {...DirectionArrowStyle};
 
     if (highlighted) {
         cellStyle = {...cellStyle, ...HighlightedCellStyle}

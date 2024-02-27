@@ -113,6 +113,7 @@ function updateGrid(state: CellData[][], action: GridAction): CellData[][] {
 }
 
 export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
+    console.log(entries)
     const [gridArray, dispatch] = useReducer(
         updateGrid, { entries, width, height }, createInitialGrid
     );
