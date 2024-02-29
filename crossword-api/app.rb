@@ -27,7 +27,7 @@ get "/crossword/new" do
             x: 0,
             y: 4
         },
-        direction: 1,
+        direction: 2,
     },
     {
         value: "ciencia",
@@ -36,6 +36,6 @@ get "/crossword/new" do
             x: 6,
             y: 0
         },
-        direction: 1,
+        direction: 2,
     }].to_json
 end

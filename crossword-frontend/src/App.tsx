@@ -12,7 +12,8 @@ export default function App() {
         .then(setEntries)
     }, []);
 
+    const key = JSON.stringify(entries);
     return (
-        <CrosswordGrid entries={entries} width={10} height={10} />
+        <CrosswordGrid key={key} entries={entries} width={10} height={10} />
     );
 }
