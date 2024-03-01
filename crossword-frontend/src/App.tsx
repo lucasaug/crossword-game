@@ -1,4 +1,4 @@
-import { CrosswordGrid } from "./CrosswordGrid";
+import { Crossword } from "./Crossword";
 import { useEffect, useState } from "react";
 
 const CROSSWORD_PATH: string = "http://localhost:4567/crossword/new";
@@ -14,6 +14,6 @@ export default function App() {
 
     const key = JSON.stringify(entries);
     return (
-        <CrosswordGrid key={key} entries={entries} width={10} height={10} />
+        <Crossword key={key} entries={entries} width={10} height={10} />
     );
 }

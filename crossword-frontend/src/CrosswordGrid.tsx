@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
 import { Direction, GridPosition } from './Cell.tsx';
+import { CrosswordEntry } from './Crossword.tsx';
 
 import {
     CellData,
@@ -12,14 +13,7 @@ import {
     LetterCellData
 } from './Cell';
 
-interface CrosswordEntry {
-    value: string,
-    clue: string,
-    startPosition: GridPosition,
-    direction: Direction,
-};
-
-interface CrosswordGridProps {
+export interface CrosswordGridProps {
     entries: CrosswordEntry[],
     width: number,
     height: number,
