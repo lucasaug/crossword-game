@@ -23,6 +23,14 @@ interface CrosswordGridProps {
     entries: CrosswordEntry[],
     width: number,
     height: number,
+    cellSize: string,
+    gapSize: string,
+    fontSize: string,
+    backgroundColor: string,
+    emptyCellColor: "#7755CC",
+    clueCellColor: "white",
+    letterCellColor: "#EEEEFF",
+    highlightColor: "#FF0000",
 };
 
 enum GridActionType {
@@ -112,7 +120,19 @@ function updateGrid(state: CellData[][], action: GridAction): CellData[][] {
     return result
 }
 
-export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
+export function CrosswordGrid({
+    entries,
+    width,
+    height,
+    cellSize,
+    gapSize,
+    fontSize,
+    backgroundColor,
+    emptyCellColor,
+    clueCellColor,
+    letterCellColor,
+    highlightColor,
+}: CrosswordGridProps) {
     const [gridArray, dispatch] = useReducer(
         updateGrid, { entries, width, height }, createInitialGrid
     );
@@ -121,14 +141,14 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
     const [position, setPosition] = useState<GridPosition>({ x: 4, y: 4 });
 
     const GridStyle = {
-        padding: "5px",
-        backgroundColor: "white",
+        padding: gapSize,
+        backgroundColor: backgroundColor,
         display: "inline-grid",
-        gridTemplateRows: "60px ".repeat(width),
-        gridTemplateColumns: "60px ".repeat(height),
-        gap:"5px",
-        fontSize: "32px",
-    }
+        gridTemplateRows: `${cellSize} `.repeat(width),
+        gridTemplateColumns: `${cellSize} `.repeat(height),
+        gap: gapSize,
+        fontSize: fontSize,
+    };
 
     useEffect(() => {
         const keyDownHandler = (event: KeyboardEvent) => {
@@ -217,14 +237,14 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
                 const key = `${i} ${j}`
                 if (isClueCell(cellData)) {
                     return <ClueCell key={key}
-                        horizontal={cellData.horizontal}
-                        vertical={cellData.vertical}
+                        data={cellData}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
                         onClick={ clickCallback({ x: i, y: j}) }
+                        cellColor={clueCellColor}
                     />
                 } else if (isLetterCell(cellData)) {
                     return <LetterCell key={key}
-                        value={cellData.value}
+                        data={cellData}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
                         highlighted={ i == position.x && j == position.y }
                         currentDirection={
@@ -232,11 +252,15 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
                                 direction : undefined
                         }
                         onClick={ clickCallback({ x: i, y: j}) }
+                        cellColor={letterCellColor}
+                        highlightColor={highlightColor}
                     />
                 } else {
                     return <EmptyCell key={key}
+                        data={cellData}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
                         onClick={ clickCallback({ x: i, y: j}) }
+                        cellColor={emptyCellColor}
                     />
                 }
             })
@@ -245,3 +269,14 @@ export function CrosswordGrid({ entries, width, height }: CrosswordGridProps) {
     </div>
     );
 }
+
+CrosswordGrid.defaultProps = {
+    cellSize: "60px",
+    gapSize: "5px",
+    fontSize: "32px",
+    backgroundColor: "white",
+    emptyCellColor: "#7755CC",
+    clueCellColor: "white",
+    letterCellColor: "#EEEEFF",
+    highlightColor: "#EEEE77",
+};
