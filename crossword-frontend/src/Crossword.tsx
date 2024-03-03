@@ -1,5 +1,6 @@
-import { Direction, GridPosition } from './Cell.tsx';
-import { CrosswordGridProps, CrosswordGrid } from './CrosswordGrid.tsx'
+import { Direction, GridPosition } from './Cell';
+import { ClueList } from './ClueList'
+import { CrosswordGridProps, CrosswordGrid } from './CrosswordGrid'
 
 export interface CrosswordEntry {
     value: string,
@@ -9,6 +10,10 @@ export interface CrosswordEntry {
 };
 
 interface CrosswordProps extends CrosswordGridProps {}
+
+const ClueListStyle = {
+    display: "inline",
+};
 
 export function Crossword({
     entries,
@@ -23,19 +28,22 @@ export function Crossword({
     letterCellColor,
     highlightColor,
 }: CrosswordProps) {
-    return <CrosswordGrid
-        entries={entries}
-        width={width}
-        height={height}
-        cellSize={cellSize}
-        gapSize={gapSize}
-        fontSize={fontSize}
-        backgroundColor={backgroundColor}
-        emptyCellColor={emptyCellColor}
-        clueCellColor={clueCellColor}
-        letterCellColor={letterCellColor}
-        highlightColor={highlightColor}
-    />
+    return <div style={{ display: "flex", gap: "20px" }}>
+        <CrosswordGrid
+            entries={entries}
+            width={width}
+            height={height}
+            cellSize={cellSize}
+            gapSize={gapSize}
+            fontSize={fontSize}
+            backgroundColor={backgroundColor}
+            emptyCellColor={emptyCellColor}
+            clueCellColor={clueCellColor}
+            letterCellColor={letterCellColor}
+            highlightColor={highlightColor}
+        />
+        <ClueList entries={entries} style={ClueListStyle} />
+    </div>
 }
 
 Crossword.defaultProps = {

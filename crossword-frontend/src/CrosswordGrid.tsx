@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
-import { Direction, GridPosition } from './Cell.tsx';
-import { CrosswordEntry } from './Crossword.tsx';
+import { Direction, GridPosition } from './Cell';
+import { CrosswordEntry } from './Crossword';
 
 import {
     CellData,
@@ -72,7 +72,7 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
         }
     }
 
-    let horizontalCount = 0, verticalCount = 0;
+    let horizontalCount = 1, verticalCount = 1;
     for (const entry of props.entries) {
         let x = entry.startPosition.x;
         let y = entry.startPosition.y;
