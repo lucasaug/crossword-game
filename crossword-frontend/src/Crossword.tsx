@@ -24,7 +24,6 @@ export function Crossword({
     fontSize,
     backgroundColor,
     emptyCellColor,
-    clueCellColor,
     letterCellColor,
     highlightColor,
 }: CrosswordProps) {
@@ -38,7 +37,6 @@ export function Crossword({
             fontSize={fontSize}
             backgroundColor={backgroundColor}
             emptyCellColor={emptyCellColor}
-            clueCellColor={clueCellColor}
             letterCellColor={letterCellColor}
             highlightColor={highlightColor}
         />

@@ -5,9 +5,7 @@ import { CrosswordEntry } from './Crossword';
 
 import {
     CellData,
-    isClueCell,
     isLetterCell,
-    ClueCell,
     EmptyCell,
     LetterCell,
     LetterCellData
@@ -22,7 +20,6 @@ export interface CrosswordGridProps {
     fontSize: string,
     backgroundColor: string,
     emptyCellColor: "#7755CC",
-    clueCellColor: "white",
     letterCellColor: "#EEEEFF",
     highlightColor: "#FF0000",
 };
@@ -44,21 +41,24 @@ function fillWord(gridArray: CellData[][], entry: CrosswordEntry) {
     let x = entry.startPosition.x;
     let y = entry.startPosition.y;
 
-    for (let i = 0; i < entry.value.length; i++) {
-        let directionInfo: { isHorizontal?: boolean, isVertical?: boolean } =
-            {};
-        if (entry.direction == Direction.VERTICAL) {
-            x++;
-            directionInfo["isVertical"] = true;
-        } else {
-            y++;
-            directionInfo["isHorizontal"] = true;
-        }
+    let directionInfo: { isHorizontal?: boolean, isVertical?: boolean } = {};
+    if (entry.direction == Direction.VERTICAL) {
+        directionInfo["isVertical"] = true;
+    } else {
+        directionInfo["isHorizontal"] = true;
+    }
 
+    for (let i = 0; i < entry.value.length; i++) {
         gridArray[x][y] = {
             ...gridArray[x][y],
             ...directionInfo,
             value: ' ',
+        };
+
+        if (entry.direction == Direction.VERTICAL) {
+            x++
+        } else {
+            y++
         }
     }
 }
@@ -80,13 +80,13 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
         if (entry.direction == Direction.VERTICAL) {
             gridArray[x][y] = {
                 ...gridArray[x][y],
-                vertical: verticalCount
+                verticalClue: verticalCount
             }
             verticalCount++;
         } else {
             gridArray[x][y] = {
                 ...gridArray[x][y],
-                horizontal: horizontalCount
+                horizontalClue: horizontalCount
             }
             horizontalCount++;
         }
@@ -123,7 +123,6 @@ export function CrosswordGrid({
     fontSize,
     backgroundColor,
     emptyCellColor,
-    clueCellColor,
     letterCellColor,
     highlightColor,
 }: CrosswordGridProps) {
@@ -223,20 +222,12 @@ export function CrosswordGrid({
         };
     }
 
-    return (
-    <div style={GridStyle}>
+    return <div style={GridStyle}>
         {
         gridArray.map((row, i) => (
             row.map((cellData, j) => {
                 const key = `${i} ${j}`
-                if (isClueCell(cellData)) {
-                    return <ClueCell key={key}
-                        data={cellData}
-                        style={{ gridRow: i+1, gridColumn: j+1 }}
-                        onClick={ clickCallback({ x: i, y: j}) }
-                        cellColor={clueCellColor}
-                    />
-                } else if (isLetterCell(cellData)) {
+                if (isLetterCell(cellData)) {
                     return <LetterCell key={key}
                         data={cellData}
                         style={{ gridRow: i+1, gridColumn: j+1 }}
@@ -260,8 +251,7 @@ export function CrosswordGrid({
             })
         ))
         }
-    </div>
-    );
+    </div>;
 }
 
 CrosswordGrid.defaultProps = {
@@ -270,7 +260,6 @@ CrosswordGrid.defaultProps = {
     fontSize: "32px",
     backgroundColor: "white",
     emptyCellColor: "#7755CC",
-    clueCellColor: "white",
     letterCellColor: "#EEEEFF",
     highlightColor: "#EEEE77",
 };

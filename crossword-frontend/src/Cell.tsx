@@ -13,24 +13,16 @@ export enum Direction {
 export interface EmptyCellData {
 }
 
-export interface ClueCellData {
-    horizontal?: number,
-    vertical?: number,
-}
-
 export interface LetterCellData {
     value: string,
+    horizontalClue?: number,
+    verticalClue?: number,
     isVertical?: boolean,
     isHorizontal?: boolean,
 }
 
 export interface EmptyCellProps extends React.HTMLAttributes<HTMLDivElement> {
     data: EmptyCellData,
-    cellColor?: string,
-}
-
-export interface ClueCellProps extends React.HTMLAttributes<HTMLDivElement> {
-    data: ClueCellData,
     cellColor?: string,
 }
 
@@ -42,26 +34,15 @@ export interface LetterCellProps extends React.HTMLAttributes<HTMLDivElement> {
     highlightColor?: string,
 }
 
-export type CellData = EmptyCellData | ClueCellData | LetterCellData;
+export type CellData = EmptyCellData | LetterCellData;
 
 export function isEmptyCell(cellData: CellData): cellData is EmptyCellData {
-    return !isLetterCell(cellData) && !isClueCell(cellData);
-}
-
-export function isClueCell(cellData: CellData): cellData is ClueCellData {
-    let castData = (cellData as ClueCellData);
-    return castData.horizontal !== undefined || castData.vertical !== undefined;
+    return !isLetterCell(cellData);
 }
 
 export function isLetterCell(cellData: CellData): cellData is LetterCellData {
     let castData = (cellData as LetterCellData);
     return castData.value !== undefined;
-}
-
-const ClueCellStyle = {
-    border: "solid 1px black",
-    position: "relative",
-    borderRadius: "10px",
 }
 
 const EmptyCellStyle = {
@@ -70,6 +51,7 @@ const EmptyCellStyle = {
 
 const LetterCellStyle = {
     borderRadius: "10px",
+    position: "relative",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -77,52 +59,10 @@ const LetterCellStyle = {
     fontFamily: "sans-serif",
 }
 
-const DirectionArrowStyle = {
-    position: "relative",
+const DirectionIndicatorStyle = {
+    position: "absolute",
     fontSize: "0.5em",
 }
-
-
-export function ClueCell({
-    data,
-    style,
-    onClick,
-    cellColor,
-}: ClueCellProps) {
-    let horizontalIndicator = <span style={{
-        ...DirectionArrowStyle,
-        position: "absolute",
-        right: "5px",
-        bottom: "35%",
-    }}>
-        { data.horizontal !== undefined ? `${data.horizontal} ▸` : "" }
-    </span>;
-    let verticalIndicator = <span style={{
-        ...DirectionArrowStyle,
-        position: "absolute",
-        bottom: "0px",
-        right: "5px",
-    }}>
-        { data.vertical !== undefined ? `${data.vertical} ▾` : "" }
-    </span>;
-
-    let clueCellStyle = {
-        ...ClueCellStyle,
-        ...style,
-        backgroundColor: cellColor,
-    };
-
-    return (
-    <div style={clueCellStyle} onClick={ onClick }>
-        {horizontalIndicator}
-        {verticalIndicator}
-    </div>
-    )
-}
-
-ClueCell.defaultProps = {
-    cellColor: "white",
-};
 
 export function EmptyCell({ style, onClick, cellColor }: EmptyCellProps) {
     let emptyCellStyle = {
@@ -155,7 +95,22 @@ export function LetterCell({
         ...style,
         backgroundColor: cellColor,
     };
-    let arrowStyle: CSSProperties = {...DirectionArrowStyle};
+    let arrowStyle: CSSProperties = {...DirectionIndicatorStyle};
+
+    const horizontalIndicator = <span style={{
+        ...DirectionIndicatorStyle,
+        top: "0px",
+        left: "0px",
+    }}>
+        { data.horizontalClue !== undefined ? `${data.horizontalClue} ▸` : "" }
+    </span>;
+    const verticalIndicator = <span style={{
+        ...DirectionIndicatorStyle,
+        top: "0px",
+        right: "5px",
+    }}>
+        { data.verticalClue !== undefined ? `${data.verticalClue} ▾` : "" }
+    </span>;
 
     if (highlighted) {
         cellStyle = {
@@ -164,13 +119,14 @@ export function LetterCell({
         };
 
         if (currentDirection == Direction.HORIZONTAL)
-            arrowStyle["left"] = "20%";
+            arrowStyle["right"] = "5px";
         else
-            arrowStyle["top"] = "20%";
+            arrowStyle["bottom"] = "5px";
     }
 
-    return (
-    <div style={cellStyle} onClick={ onClick }>
+    return <div style={cellStyle} onClick={ onClick }>
+        {horizontalIndicator}
+        {verticalIndicator}
         { data.value }
         <span style={arrowStyle}>
             { highlighted ?
@@ -179,7 +135,6 @@ export function LetterCell({
             }
         </span>
     </div>
-    )
 }
 
 LetterCell.defaultProps = {

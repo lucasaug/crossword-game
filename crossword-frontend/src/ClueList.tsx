@@ -14,12 +14,20 @@ export function ClueList({
     ).map((entry) => entry.clue);
     const verticalEntries = entries.filter(
         (entry) => entry.direction == Direction.VERTICAL
-    ).map((entry) => entry.clue);;
+    ).map((entry) => entry.clue);
 
-    return <div style={style}>
-        <h2>Across</h2>
-        <ol> { horizontalEntries.map((clue) => <li> {clue} </li>) } </ol>
-        <h2>Down</h2>
-        <ol> { verticalEntries.map((clue) => <li> {clue} </li>) } </ol>
+    const containerStyle = {
+        ...style,
+        display: "flex",
+    };
+    return <div style={containerStyle}>
+        <div>
+            <h2>Across</h2>
+            <ol> { horizontalEntries.map((clue) => <li> {clue} </li>) } </ol>
+        </div>
+        <div>
+            <h2>Down</h2>
+            <ol> { verticalEntries.map((clue) => <li> {clue} </li>) } </ol>
+        </div>
     </div>;
 };

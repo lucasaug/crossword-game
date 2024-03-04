@@ -7,7 +7,7 @@ get "/crossword/new" do
         clue: "quem fez iss",
         startPosition: {
             x: 2,
-            y: 2
+            y: 4
         },
         direction: 2,
     },
@@ -15,7 +15,7 @@ get "/crossword/new" do
         value: "lupa",
         clue: "negoç de aumentar a vista",
         startPosition: {
-            x: 0,
+            x: 2,
             y: 4
         },
         direction: 1,
@@ -25,7 +25,7 @@ get "/crossword/new" do
         clue: "molhim de toma hmm",
         startPosition: {
             x: 0,
-            y: 4
+            y: 5
         },
         direction: 2,
     },
@@ -33,7 +33,7 @@ get "/crossword/new" do
         value: "ciencia",
         clue: "negoç de estuda os negoç",
         startPosition: {
-            x: 6,
+            x: 7,
             y: 0
         },
         direction: 2,
