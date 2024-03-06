@@ -149,6 +149,7 @@ export function CrosswordGrid({
                 event.key[0].match(/[a-z]/i);
             const isBackspace = event.key == "Backspace";
             const isDelete = event.key == "Delete";
+            const isArrowKey = event.key.substring(0, 5) === "Arrow";
 
             const {x, y} = position;
 
@@ -191,6 +192,35 @@ export function CrosswordGrid({
                     ) {
                         setPosition({ x: position.x, y: position.y - 1 })
                     }
+                }
+            } else if (isArrowKey) {
+                if (event.key == "ArrowUp" &&
+                    position.x > 0 &&
+                    isLetterCell(gridArray[x - 1][y])
+                ) {
+                    setPosition({ x: position.x - 1, y: position.y })
+                    setDirection(Direction.VERTICAL);
+                } else if (
+                    event.key == "ArrowDown" &&
+                    position.x < height &&
+                    isLetterCell(gridArray[x + 1][y])
+                ) {
+                    setPosition({ x: position.x + 1, y: position.y })
+                    setDirection(Direction.VERTICAL);
+                } else if (
+                    event.key == "ArrowLeft" &&
+                    position.y > 0 &&
+                    isLetterCell(gridArray[x][y - 1])
+                ) {
+                    setPosition({ x: position.x, y: position.y - 1 })
+                    setDirection(Direction.HORIZONTAL);
+                } else if (
+                    event.key == "ArrowRight" &&
+                    position.y < width &&
+                    isLetterCell(gridArray[x][y + 1])
+                ) {
+                    setPosition({ x: position.x, y: position.y + 1 })
+                    setDirection(Direction.HORIZONTAL);
                 }
             }
         };
