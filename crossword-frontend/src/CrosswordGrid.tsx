@@ -126,12 +126,15 @@ export function CrosswordGrid({
     letterCellColor,
     highlightColor,
 }: CrosswordGridProps) {
+    const startPosition = entries.length > 0 ?
+        entries[0].startPosition : { x: 0,  y: 0};
+
     const [gridArray, dispatch] = useReducer(
         updateGrid, { entries, width, height }, createInitialGrid
     );
 
     const [direction, setDirection] = useState<Direction>(Direction.VERTICAL);
-    const [position, setPosition] = useState<GridPosition>({ x: 4, y: 4 });
+    const [position, setPosition] = useState<GridPosition>(startPosition);
 
     const GridStyle = {
         padding: gapSize,
@@ -150,6 +153,7 @@ export function CrosswordGrid({
             const isBackspace = event.key == "Backspace";
             const isDelete = event.key == "Delete";
             const isArrowKey = event.key.substring(0, 5) === "Arrow";
+            const isTab = event.key === "Tab";
 
             const {x, y} = position;
 
@@ -222,6 +226,20 @@ export function CrosswordGrid({
                     setPosition({ x: position.x, y: position.y + 1 })
                     setDirection(Direction.HORIZONTAL);
                 }
+            } else if (isTab) {
+                event.preventDefault();
+
+                /* TODO handle tab
+                let index;
+                const currentCell = gridArray[position.x][position.y];
+                if () {
+                }
+
+                const newPosition = entries[index].startPosition;
+
+                setPosition(newPosition);
+                setDirection(entries[index].direction);
+                */
             }
         };
 
