@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 const CROSSWORD_PATH: string = "http://localhost:4567/crossword/new";
 
 export default function App() {
-    const [entries, setEntries] = useState([]);
+    const [entries, setEntries] = useState({across: [], down: []});
 
     useEffect(() => {
         fetch(CROSSWORD_PATH)

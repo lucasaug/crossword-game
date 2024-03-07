@@ -1,4 +1,4 @@
-import { Direction, GridPosition } from './Cell';
+import { GridPosition } from './Cell';
 import { ClueList } from './ClueList'
 import { CrosswordGridProps, CrosswordGrid } from './CrosswordGrid'
 
@@ -6,8 +6,12 @@ export interface CrosswordEntry {
     value: string,
     clue: string,
     startPosition: GridPosition,
-    direction: Direction,
 };
+
+export interface CrosswordEntrySet {
+    across: CrosswordEntry[],
+    down: CrosswordEntry[],
+}
 
 interface CrosswordProps extends CrosswordGridProps {}
 

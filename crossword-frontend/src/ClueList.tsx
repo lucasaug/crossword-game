@@ -1,21 +1,14 @@
 import { Direction } from './Cell'
-import { CrosswordEntry } from './Crossword'
+import { CrosswordEntrySet } from './Crossword'
 
 interface ClueListProps extends React.HTMLAttributes<HTMLDivElement> {
-    entries: CrosswordEntry[],
+    entries: CrosswordEntrySet,
 };
 
 export function ClueList({
     entries,
     style,
 }: ClueListProps) {
-    const horizontalEntries = entries.filter(
-        (entry) => entry.direction == Direction.HORIZONTAL
-    ).map((entry) => entry.clue);
-    const verticalEntries = entries.filter(
-        (entry) => entry.direction == Direction.VERTICAL
-    ).map((entry) => entry.clue);
-
     const containerStyle = {
         ...style,
         display: "flex",
@@ -23,11 +16,11 @@ export function ClueList({
     return <div style={containerStyle}>
         <div>
             <h2>Across</h2>
-            <ol> { horizontalEntries.map((clue) => <li> {clue} </li>) } </ol>
+            <ol> { entries.across.map((clue) => <li> {clue.clue} </li>) } </ol>
         </div>
         <div>
             <h2>Down</h2>
-            <ol> { verticalEntries.map((clue) => <li> {clue} </li>) } </ol>
+            <ol> { entries.down.map((clue) => <li> {clue.clue} </li>) } </ol>
         </div>
     </div>;
 };

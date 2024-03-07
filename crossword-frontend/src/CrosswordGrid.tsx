@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
 import { Direction, GridPosition } from './Cell';
-import { CrosswordEntry } from './Crossword';
+import { CrosswordEntrySet, CrosswordEntry } from './Crossword';
 
 import {
     CellData,
@@ -12,7 +12,7 @@ import {
 } from './Cell';
 
 export interface CrosswordGridProps {
-    entries: CrosswordEntry[],
+    entries: CrosswordEntrySet,
     width: number,
     height: number,
     cellSize: string,
@@ -37,12 +37,16 @@ type GridKeyAction = {
 
 type GridAction = GridKeyAction;
 
-function fillWord(gridArray: CellData[][], entry: CrosswordEntry) {
+function fillWord(
+    gridArray: CellData[][],
+    entry: CrosswordEntry,
+    direction: Direction
+) {
     let x = entry.startPosition.x;
     let y = entry.startPosition.y;
 
     let directionInfo: { isHorizontal?: boolean, isVertical?: boolean } = {};
-    if (entry.direction == Direction.VERTICAL) {
+    if (direction == Direction.VERTICAL) {
         directionInfo["isVertical"] = true;
     } else {
         directionInfo["isHorizontal"] = true;
@@ -55,7 +59,7 @@ function fillWord(gridArray: CellData[][], entry: CrosswordEntry) {
             value: ' ',
         };
 
-        if (entry.direction == Direction.VERTICAL) {
+        if (direction == Direction.VERTICAL) {
             x++
         } else {
             y++
@@ -72,27 +76,29 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
         }
     }
 
-    let horizontalCount = 1, verticalCount = 1;
-    for (const entry of props.entries) {
+    props.entries.across.forEach((entry, i) => {
         let x = entry.startPosition.x;
         let y = entry.startPosition.y;
 
-        if (entry.direction == Direction.VERTICAL) {
-            gridArray[x][y] = {
-                ...gridArray[x][y],
-                verticalClue: verticalCount
-            }
-            verticalCount++;
-        } else {
-            gridArray[x][y] = {
-                ...gridArray[x][y],
-                horizontalClue: horizontalCount
-            }
-            horizontalCount++;
+        gridArray[x][y] = {
+            ...gridArray[x][y],
+            horizontalClue: i + 1,
         }
 
-        fillWord(gridArray, entry);
-    }
+        fillWord(gridArray, entry, Direction.HORIZONTAL);
+    });
+
+    props.entries.down.forEach((entry, i) => {
+        let x = entry.startPosition.x;
+        let y = entry.startPosition.y;
+
+        gridArray[x][y] = {
+            ...gridArray[x][y],
+            verticalClue: i + 1,
+        }
+
+        fillWord(gridArray, entry, Direction.VERTICAL);
+    });
 
     return gridArray;
 }
@@ -126,8 +132,11 @@ export function CrosswordGrid({
     letterCellColor,
     highlightColor,
 }: CrosswordGridProps) {
-    const startPosition = entries.length > 0 ?
-        entries[0].startPosition : { x: 0,  y: 0};
+    const startPosition = entries.across.length > 0 ?
+        entries.across[0].startPosition :
+            (entries.down.length > 0 ?
+                entries.down[0].startPosition :
+                    { x: 0,  y: 0} );
 
     const [gridArray, dispatch] = useReducer(
         updateGrid, { entries, width, height }, createInitialGrid
@@ -168,62 +177,54 @@ export function CrosswordGrid({
 
                 if (isLetter) {
                     if (
-                        direction == Direction.VERTICAL &&
-                        position.x < width - 1 &&
+                        direction == Direction.VERTICAL && x < width - 1 &&
                         isLetterCell(gridArray[x + 1][y])
                     ) {
-                        setPosition({ x: position.x + 1, y: position.y })
+                        setPosition({ x: x + 1, y: y })
                     }
                     if (
-                        direction == Direction.HORIZONTAL &&
-                        position.y < height - 1 &&
+                        direction == Direction.HORIZONTAL && y < height - 1 &&
                         isLetterCell(gridArray[x][y + 1])
                     ) {
-                        setPosition({ x: position.x, y: position.y + 1 })
+                        setPosition({ x: x, y: y + 1 })
                     }
                 } else if (isBackspace) {
                     if (
-                        direction == Direction.VERTICAL &&
-                        position.x > 0 &&
+                        direction == Direction.VERTICAL && x > 0 &&
                         isLetterCell(gridArray[x - 1][y])
                     ) {
-                        setPosition({ x: position.x - 1, y: position.y })
+                        setPosition({ x: x - 1, y: y })
                     }
                     if (
-                        direction == Direction.HORIZONTAL &&
-                        position.y > 0 &&
+                        direction == Direction.HORIZONTAL && y > 0 &&
                         isLetterCell(gridArray[x][y - 1])
                     ) {
-                        setPosition({ x: position.x, y: position.y - 1 })
+                        setPosition({ x: x, y: y - 1 })
                     }
                 }
             } else if (isArrowKey) {
-                if (event.key == "ArrowUp" &&
-                    position.x > 0 &&
+                if (event.key == "ArrowUp" && x > 0 &&
                     isLetterCell(gridArray[x - 1][y])
                 ) {
-                    setPosition({ x: position.x - 1, y: position.y })
+                    setPosition({ x: x - 1, y: y })
                     setDirection(Direction.VERTICAL);
                 } else if (
-                    event.key == "ArrowDown" &&
-                    position.x < height &&
+                    event.key == "ArrowDown" && x < height &&
                     isLetterCell(gridArray[x + 1][y])
                 ) {
-                    setPosition({ x: position.x + 1, y: position.y })
+                    setPosition({ x: x + 1, y: y })
                     setDirection(Direction.VERTICAL);
                 } else if (
-                    event.key == "ArrowLeft" &&
-                    position.y > 0 &&
+                    event.key == "ArrowLeft" && y > 0 &&
                     isLetterCell(gridArray[x][y - 1])
                 ) {
-                    setPosition({ x: position.x, y: position.y - 1 })
+                    setPosition({ x: x, y: y - 1 })
                     setDirection(Direction.HORIZONTAL);
                 } else if (
-                    event.key == "ArrowRight" &&
-                    position.y < width &&
+                    event.key == "ArrowRight" && y < width &&
                     isLetterCell(gridArray[x][y + 1])
                 ) {
-                    setPosition({ x: position.x, y: position.y + 1 })
+                    setPosition({ x: x, y: y + 1 })
                     setDirection(Direction.HORIZONTAL);
                 }
             } else if (isTab) {
@@ -231,7 +232,7 @@ export function CrosswordGrid({
 
                 /* TODO handle tab
                 let index;
-                const currentCell = gridArray[position.x][position.y];
+                const currentCell = gridArray[x][y];
                 if () {
                 }
 
