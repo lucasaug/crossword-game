@@ -10,15 +10,18 @@ export enum Direction {
     HORIZONTAL
 }
 
+export interface ClueData {
+    showClue: boolean,
+    clueIndex: number,
+}
+
 export interface EmptyCellData {
 }
 
 export interface LetterCellData {
     value: string,
-    horizontalClue?: number,
-    verticalClue?: number,
-    isVertical?: boolean,
-    isHorizontal?: boolean,
+    horizontalClue?: ClueData,
+    verticalClue?: ClueData,
 }
 
 export interface EmptyCellProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -125,8 +128,8 @@ export function LetterCell({
     }
 
     return <div style={cellStyle} onClick={ onClick }>
-        {horizontalIndicator}
-        {verticalIndicator}
+        {data.horizontalClue?.showClue ? horizontalIndicator : ""}
+        {data.verticalClue?.showClue ? verticalIndicator : ""}
         { data.value }
         <span style={arrowStyle}>
             { highlighted ?
