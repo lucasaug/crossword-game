@@ -82,22 +82,16 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
 
         fillWord(gridArray, entry, i + 1, Direction.HORIZONTAL);
 
-        gridArray[x][y] = {
-            ...gridArray[x][y],
-            showClue: true,
-        }
+        gridArray[x][y].horizontalClue.showClue = true;
     });
 
     props.entries.down.forEach((entry, i) => {
         let x = entry.startPosition.x;
         let y = entry.startPosition.y;
 
-        gridArray[x][y] = {
-            ...gridArray[x][y],
-            showClue: true,
-        }
-
         fillWord(gridArray, entry, i + 1, Direction.VERTICAL);
+
+        gridArray[x][y].verticalClue.showClue = true;
     });
 
     return gridArray;
@@ -230,7 +224,7 @@ export function CrosswordGrid({
             } else if (isTab) {
                 event.preventDefault();
 
-                /* TODO handle tab */
+                /* TODO handle tab
                 const currentCell = gridArray[x][y];
                 let index;
                 if (direction == Direction.HORIZONTAL) {
@@ -241,6 +235,7 @@ export function CrosswordGrid({
 
                 setPosition(newPosition);
                 setDirection(entries[index].direction);
+                */
             }
         };
 

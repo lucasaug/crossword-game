@@ -128,8 +128,8 @@ export function LetterCell({
     }
 
     return <div style={cellStyle} onClick={ onClick }>
-        {data.horizontalClue?.showClue ? horizontalIndicator : ""}
-        {data.verticalClue?.showClue ? verticalIndicator : ""}
+        { data.horizontalClue?.showClue ? horizontalIndicator : ""}
+        { data.verticalClue?.showClue ? verticalIndicator : ""}
         { data.value }
         <span style={arrowStyle}>
             { highlighted ?
