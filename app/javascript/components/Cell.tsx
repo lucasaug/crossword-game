@@ -1,3 +1,5 @@
+import React from "react";
+
 import { CSSProperties } from "react";
 
 export interface GridPosition {
@@ -105,14 +107,16 @@ export function LetterCell({
         top: "0px",
         left: "0px",
     }}>
-        { data.horizontalClue !== undefined ? `${data.horizontalClue} ▸` : "" }
+        { data.horizontalClue !== undefined ?
+            `${data.horizontalClue.clueIndex} ▸` : "" }
     </span>;
     const verticalIndicator = <span style={{
         ...DirectionIndicatorStyle,
         top: "0px",
         right: "5px",
     }}>
-        { data.verticalClue !== undefined ? `${data.verticalClue} ▾` : "" }
+        { data.verticalClue !== undefined ?
+            `${data.verticalClue.clueIndex} ▾` : "" }
     </span>;
 
     if (highlighted) {

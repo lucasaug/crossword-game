@@ -1,3 +1,5 @@
+import React from "react";
+
 import { GridPosition } from './Cell';
 import { ClueList } from './ClueList'
 import { CrosswordGridProps, CrosswordGrid } from './CrosswordGrid'

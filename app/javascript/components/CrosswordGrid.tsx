@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useEffect, useReducer, useState } from 'react';
 
 import { ClueData, Direction, GridPosition } from './Cell';
@@ -58,10 +60,10 @@ function fillWord(
         };
 
         if (direction == Direction.VERTICAL) {
-            gridArray[x][y]["verticalClue"] = directionInfo;
+            gridArray[x][y]["verticalClue"] = {...directionInfo};
             x++
         } else {
-            gridArray[x][y]["horizontalClue"] = directionInfo;
+            gridArray[x][y]["horizontalClue"] = {...directionInfo};
             y++
         }
     }

@@ -1,4 +1,4 @@
-import { Direction } from './Cell'
+import React from "react";
 import { CrosswordEntrySet } from './Crossword'
 
 interface ClueListProps extends React.HTMLAttributes<HTMLDivElement> {
