@@ -225,18 +225,30 @@ export function CrosswordGrid({
             } else if (isTab) {
                 event.preventDefault();
 
-                /* TODO handle tab
-                const currentCell = gridArray[x][y];
-                let index;
-                if (direction == Direction.HORIZONTAL) {
-                    index =  pvj
+                const numClues = entries.across.length + entries.down.length;
+
+                const currentIndex = direction === Direction.VERTICAL ?
+                    gridArray[x][y].verticalClue.clueNumber :
+                    gridArray[x][y].horizontalClue.clueNumber;
+
+                let nextIndex = currentIndex + 1;
+                if (nextIndex > numClues) nextIndex = 1;
+
+                let nextDirection = Direction.HORIZONTAL;
+                let nextCell = entries.across.find(
+                    (entry) => entry.clueNumber === nextIndex
+                );
+                if (!nextCell) {
+                    nextDirection = Direction.VERTICAL;
+                    nextCell = entries.down.find(
+                        (entry) => entry.clueNumber === nextIndex
+                    );
                 }
 
-                const newPosition = entries[index].startPosition;
-
-                setPosition(newPosition);
-                setDirection(entries[index].direction);
-                */
+                if (nextCell) {
+                    setPosition(nextCell.startPosition);
+                    setDirection(nextDirection);
+                }
             }
         };
 
