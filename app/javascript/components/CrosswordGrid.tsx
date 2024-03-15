@@ -21,9 +21,9 @@ export interface CrosswordGridProps {
     gapSize: string,
     fontSize: string,
     backgroundColor: string,
-    emptyCellColor: "#7755CC",
-    letterCellColor: "#EEEEFF",
-    highlightColor: "#FF0000",
+    emptyCellColor: string,
+    letterCellColor: string,
+    highlightColor: string,
 };
 
 enum GridActionType {
@@ -42,7 +42,6 @@ type GridAction = GridKeyAction;
 function fillWord(
     gridArray: CellData[][],
     entry: CrosswordEntry,
-    index: number,
     direction: Direction
 ) {
     let x = entry.startPosition.x;
@@ -50,7 +49,7 @@ function fillWord(
 
     let directionInfo: ClueData = {
         showClue: false,
-        clueIndex: index,
+        clueNumber: entry.clueNumber,
     };
 
     for (let i = 0; i < entry.value.length; i++) {
@@ -78,20 +77,20 @@ function createInitialGrid(props: CrosswordGridProps): CellData[][] {
         }
     }
 
-    props.entries.across.forEach((entry, i) => {
+    props.entries.across.forEach((entry) => {
         let x = entry.startPosition.x;
         let y = entry.startPosition.y;
 
-        fillWord(gridArray, entry, i + 1, Direction.HORIZONTAL);
+        fillWord(gridArray, entry, Direction.HORIZONTAL);
 
         gridArray[x][y].horizontalClue.showClue = true;
     });
 
-    props.entries.down.forEach((entry, i) => {
+    props.entries.down.forEach((entry) => {
         let x = entry.startPosition.x;
         let y = entry.startPosition.y;
 
-        fillWord(gridArray, entry, i + 1, Direction.VERTICAL);
+        fillWord(gridArray, entry, Direction.VERTICAL);
 
         gridArray[x][y].verticalClue.showClue = true;
     });
@@ -120,13 +119,13 @@ export function CrosswordGrid({
     entries,
     width,
     height,
-    cellSize,
-    gapSize,
-    fontSize,
-    backgroundColor,
-    emptyCellColor,
-    letterCellColor,
-    highlightColor,
+    cellSize="60px",
+    gapSize="5px",
+    fontSize="32px",
+    backgroundColor="white",
+    emptyCellColor="#7755CC",
+    letterCellColor="#EEEEFF",
+    highlightColor="#EEEE77",
 }: CrosswordGridProps) {
     const startPosition = entries.across.length > 0 ?
         entries.across[0].startPosition :
@@ -300,12 +299,3 @@ export function CrosswordGrid({
     </div>;
 }
 
-CrosswordGrid.defaultProps = {
-    cellSize: "60px",
-    gapSize: "5px",
-    fontSize: "32px",
-    backgroundColor: "white",
-    emptyCellColor: "#7755CC",
-    letterCellColor: "#EEEEFF",
-    highlightColor: "#EEEE77",
-};

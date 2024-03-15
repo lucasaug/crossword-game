@@ -16,11 +16,19 @@ export function ClueList({
     return <div style={containerStyle}>
         <div>
             <h2>Across</h2>
-            <ol> { entries.across.map((clue) => <li> {clue.clue} </li>) } </ol>
+            <ul> {
+                entries.across
+                    .sort((a, b) => a.clueNumber - b.clueNumber)
+                    .map((clue) => <li>{clue.clueNumber}. {clue.clue} </li>)
+            } </ul>
         </div>
         <div>
             <h2>Down</h2>
-            <ol> { entries.down.map((clue) => <li> {clue.clue} </li>) } </ol>
+            <ul> {
+                entries.down
+                    .sort((a, b) => a.clueNumber - b.clueNumber)
+                    .map((clue) => <li>{clue.clueNumber}. {clue.clue} </li>)
+            } </ul>
         </div>
     </div>;
 };

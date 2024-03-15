@@ -14,7 +14,7 @@ export enum Direction {
 
 export interface ClueData {
     showClue: boolean,
-    clueIndex: number,
+    clueNumber: number,
 }
 
 export interface EmptyCellData {
@@ -69,7 +69,7 @@ const DirectionIndicatorStyle = {
     fontSize: "0.5em",
 }
 
-export function EmptyCell({ style, onClick, cellColor }: EmptyCellProps) {
+export function EmptyCell({ style, onClick, cellColor="#7755CC" }: EmptyCellProps) {
     let emptyCellStyle = {
         ...EmptyCellStyle,
         ...style,
@@ -82,9 +82,6 @@ export function EmptyCell({ style, onClick, cellColor }: EmptyCellProps) {
     )
 }
 
-EmptyCell.defaultProps = {
-    cellColor: "#7755CC",
-};
 
 export function LetterCell({
     data,
@@ -92,8 +89,8 @@ export function LetterCell({
     highlighted,
     currentDirection,
     onClick,
-    cellColor,
-    highlightColor,
+    cellColor="#EEEEFF",
+    highlightColor="#EEEE77",
 }: LetterCellProps) {
     let cellStyle: CSSProperties = {
         ...LetterCellStyle,
@@ -108,7 +105,7 @@ export function LetterCell({
         left: "0px",
     }}>
         { data.horizontalClue !== undefined ?
-            `${data.horizontalClue.clueIndex} ▸` : "" }
+            `${data.horizontalClue.clueNumber} ▸` : "" }
     </span>;
     const verticalIndicator = <span style={{
         ...DirectionIndicatorStyle,
@@ -116,7 +113,7 @@ export function LetterCell({
         right: "5px",
     }}>
         { data.verticalClue !== undefined ?
-            `${data.verticalClue.clueIndex} ▾` : "" }
+            `${data.verticalClue.clueNumber} ▾` : "" }
     </span>;
 
     if (highlighted) {
@@ -144,7 +141,3 @@ export function LetterCell({
     </div>
 }
 
-LetterCell.defaultProps = {
-    cellColor: "#EEEEFF",
-    highlightColor: "#EEEE77",
-};

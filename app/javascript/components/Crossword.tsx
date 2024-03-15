@@ -8,6 +8,7 @@ export interface CrosswordEntry {
     value: string,
     clue: string,
     startPosition: GridPosition,
+    clueNumber: number,
 };
 
 export interface CrosswordEntrySet {

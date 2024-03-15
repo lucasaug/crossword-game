@@ -17,6 +17,7 @@ export default function Home() {
                     x: 2,
                     y: 4
                 },
+                clueNumber: 2,
             },
             {
                 value: "sopa",
@@ -25,6 +26,7 @@ export default function Home() {
                     x: 0,
                     y: 5
                 },
+                clueNumber: 1,
             },
             {
                 value: "ciencia",
@@ -33,6 +35,7 @@ export default function Home() {
                     x: 7,
                     y: 0
                 },
+                clueNumber: 4,
             }
         ],
         down: [
@@ -43,6 +46,7 @@ export default function Home() {
                     x: 2,
                     y: 4
                 },
+                clueNumber: 3,
             }
         ]
     });
