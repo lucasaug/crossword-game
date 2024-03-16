@@ -24,6 +24,7 @@ export interface CrosswordGridProps {
     emptyCellColor: string,
     letterCellColor: string,
     highlightColor: string,
+    onCellChange: React.ChangeEvent<HTMLInputElement>,
 };
 
 enum GridActionType {
@@ -126,19 +127,21 @@ export function CrosswordGrid({
     emptyCellColor="#7755CC",
     letterCellColor="#EEEEFF",
     highlightColor="#EEEE77",
+    onCellChange
 }: CrosswordGridProps) {
-    const startPosition = entries.across.length > 0 ?
-        entries.across[0].startPosition :
-            (entries.down.length > 0 ?
-                entries.down[0].startPosition :
-                    { x: 0,  y: 0} );
+    let firstDirection = Direction.HORIZONTAL;
+    let firstCell = entries.across.find((entry) => entry.clueNumber === 1);
+    if (!firstCell) {
+        firstDirection = Direction.VERTICAL;
+        firstCell = entries.down.find((entry) => entry.clueNumber === 1);
+    }
 
     const [gridArray, dispatch] = useReducer(
         updateGrid, { entries, width, height }, createInitialGrid
     );
 
-    const [direction, setDirection] = useState<Direction>(Direction.VERTICAL);
-    const [position, setPosition] = useState<GridPosition>(startPosition);
+    const [direction, setDirection] = useState<Direction>(firstDirection);
+    const [position, setPosition] = useState<GridPosition>(firstCell?.startPosition);
 
     const GridStyle = {
         padding: gapSize,
@@ -160,6 +163,8 @@ export function CrosswordGrid({
             const isTab = event.key === "Tab";
 
             const {x, y} = position;
+            let newPosition = {...position};
+            let newDirection = direction;
 
             if (isLetter || isBackspace || isDelete) {
                 const action = {
@@ -175,52 +180,52 @@ export function CrosswordGrid({
                         direction == Direction.VERTICAL && x < width - 1 &&
                         isLetterCell(gridArray[x + 1][y])
                     ) {
-                        setPosition({ x: x + 1, y: y })
+                        newPosition = { x: x + 1, y: y };
                     }
                     if (
                         direction == Direction.HORIZONTAL && y < height - 1 &&
                         isLetterCell(gridArray[x][y + 1])
                     ) {
-                        setPosition({ x: x, y: y + 1 })
+                        newPosition = { x: x, y: y + 1 };
                     }
                 } else if (isBackspace) {
                     if (
                         direction == Direction.VERTICAL && x > 0 &&
                         isLetterCell(gridArray[x - 1][y])
                     ) {
-                        setPosition({ x: x - 1, y: y })
+                        newPosition = { x: x - 1, y: y };
                     }
                     if (
                         direction == Direction.HORIZONTAL && y > 0 &&
                         isLetterCell(gridArray[x][y - 1])
                     ) {
-                        setPosition({ x: x, y: y - 1 })
+                        newPosition = { x: x, y: y - 1 };
                     }
                 }
             } else if (isArrowKey) {
                 if (event.key == "ArrowUp" && x > 0 &&
                     isLetterCell(gridArray[x - 1][y])
                 ) {
-                    setPosition({ x: x - 1, y: y })
-                    setDirection(Direction.VERTICAL);
+                    newPosition = { x: x - 1, y: y };
+                    newDirection = Direction.VERTICAL;
                 } else if (
                     event.key == "ArrowDown" && x < height &&
                     isLetterCell(gridArray[x + 1][y])
                 ) {
-                    setPosition({ x: x + 1, y: y })
-                    setDirection(Direction.VERTICAL);
+                    newPosition = { x: x + 1, y: y };
+                    newDirection = Direction.VERTICAL;
                 } else if (
                     event.key == "ArrowLeft" && y > 0 &&
                     isLetterCell(gridArray[x][y - 1])
                 ) {
-                    setPosition({ x: x, y: y - 1 })
-                    setDirection(Direction.HORIZONTAL);
+                    newPosition = { x: x, y: y - 1 };
+                    newDirection = Direction.HORIZONTAL;
                 } else if (
                     event.key == "ArrowRight" && y < width &&
                     isLetterCell(gridArray[x][y + 1])
                 ) {
-                    setPosition({ x: x, y: y + 1 })
-                    setDirection(Direction.HORIZONTAL);
+                    newPosition = { x: x, y: y + 1 };
+                    newDirection = Direction.HORIZONTAL;
                 }
             } else if (isTab) {
                 event.preventDefault();
@@ -246,9 +251,21 @@ export function CrosswordGrid({
                 }
 
                 if (nextCell) {
-                    setPosition(nextCell.startPosition);
-                    setDirection(nextDirection);
+                    newPosition = nextCell.startPosition;
+                    newDirection = nextDirection;
                 }
+            }
+
+            if (newPosition !== position || newDirection !== direction) {
+                setPosition(newPosition);
+                setDirection(newDirection);
+
+                const { newX, newY } = newPosition;
+                onCellChange(
+                    newPosition,
+                    newDirection,
+                    gridArray[newX][newY].clueNumber
+                );
             }
         };
 

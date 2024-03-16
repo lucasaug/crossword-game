@@ -1,8 +1,8 @@
 import React from "react";
 
 import { GridPosition } from './Cell';
-import { ClueList } from './ClueList'
-import { CrosswordGridProps, CrosswordGrid } from './CrosswordGrid'
+import { ClueList } from './ClueList';
+import { CrosswordGridProps, CrosswordGrid } from './CrosswordGrid';
 
 export interface CrosswordEntry {
     value: string,
@@ -13,8 +13,7 @@ export interface CrosswordEntry {
 
 export interface CrosswordEntrySet {
     across: CrosswordEntry[],
-    down: CrosswordEntry[],
-}
+    down: CrosswordEntry[] }
 
 interface CrosswordProps extends CrosswordGridProps {}
 
@@ -47,7 +46,7 @@ export function Crossword({
             letterCellColor={letterCellColor}
             highlightColor={highlightColor}
         />
-        <ClueList entries={entries} style={ClueListStyle} />
+        <ClueList entries={entries} style={ClueListStyle} selectedClue={1}/>
     </div>
 }
 
