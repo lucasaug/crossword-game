@@ -24,7 +24,7 @@ export interface CrosswordGridProps {
     emptyCellColor: string,
     letterCellColor: string,
     highlightColor: string,
-    onCellChange: React.ChangeEvent<HTMLInputElement>,
+    onCellChange?: React.ChangeEvent<HTMLInputElement>,
 };
 
 enum GridActionType {
@@ -260,11 +260,18 @@ export function CrosswordGrid({
                 setPosition(newPosition);
                 setDirection(newDirection);
 
-                const { newX, newY } = newPosition;
+                const { x: newX, y: newY } = newPosition;
+
+                let clueNumber = gridArray[newX][newY].
+                    horizontalClue?.clueNumber;
+                if (newDirection === Direction.VERTICAL)
+                    clueNumber = gridArray[newX][newY].
+                        verticalClue?.clueNumber;
+
                 onCellChange(
                     newPosition,
                     newDirection,
-                    gridArray[newX][newY].clueNumber
+                    clueNumber
                 );
             }
         };
@@ -279,19 +286,45 @@ export function CrosswordGrid({
     function clickCallback({ x, y }: GridPosition ) {
         return () => {
             let cell = gridArray[x][y];
+
             if (isLetterCell(cell)) {
+                let newDirection = Direction.HORIZONTAL;
+
                 if (position.x != x || position.y != y) {
                     setPosition({ x: x, y: y })
-                    if (cell.horizontalClue) setDirection(Direction.HORIZONTAL);
-                    else if (cell.verticalClue) setDirection(Direction.VERTICAL);
+                    if (cell.horizontalClue)
+                        newDirection = Direction.HORIZONTAL;
+                    else if (cell.verticalClue)
+                        newDirection = Direction.VERTICAL;
                 } else {
                     if (cell.horizontalClue && cell.verticalClue) {
                         if (direction == Direction.HORIZONTAL)
-                            setDirection(Direction.VERTICAL);
+                            newDirection = Direction.VERTICAL;
                         else
-                            setDirection(Direction.HORIZONTAL);
+                            newDirection = Direction.HORIZONTAL;
                     }
                 }
+
+                setDirection(newDirection);
+
+                if (
+                    x !== position.x ||
+                    y !== position.y ||
+                    newDirection !== direction
+                ) {
+                    let clueNumber = gridArray[x][y].
+                        horizontalClue?.clueNumber;
+                    if (newDirection === Direction.VERTICAL)
+                        clueNumber = gridArray[x][y].
+                            verticalClue?.clueNumber;
+
+                    onCellChange(
+                        { x, y },
+                        newDirection,
+                        clueNumber
+                    );
+                }
+
             }
         };
     }

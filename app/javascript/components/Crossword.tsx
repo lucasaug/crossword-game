@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from 'react';
 
 import { GridPosition } from './Cell';
 import { ClueList } from './ClueList';
@@ -33,6 +34,8 @@ export function Crossword({
     letterCellColor,
     highlightColor,
 }: CrosswordProps) {
+    const [selectedClue , setSelectedClue] = useState(1);
+
     return <div style={{ display: "flex", gap: "20px" }}>
         <CrosswordGrid
             entries={entries}
@@ -45,8 +48,13 @@ export function Crossword({
             emptyCellColor={emptyCellColor}
             letterCellColor={letterCellColor}
             highlightColor={highlightColor}
+            onCellChange={(_, __, clueNumber) => setSelectedClue(clueNumber)}
         />
-        <ClueList entries={entries} style={ClueListStyle} selectedClue={1}/>
+        <ClueList
+            entries={entries}
+            style={ClueListStyle}
+            selectedClue={selectedClue}
+        />
     </div>
 }
 
