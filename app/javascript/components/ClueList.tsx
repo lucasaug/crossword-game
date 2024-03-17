@@ -5,6 +5,7 @@ interface ClueListProps extends React.HTMLAttributes<HTMLDivElement> {
     entries: CrosswordEntrySet,
     highlightColor: string,
     selectedClue: number,
+    onClueSelect?: React.ChangeEvent<HTMLInputElement>,
 };
 
 export function ClueList({
@@ -12,6 +13,7 @@ export function ClueList({
     highlightColor="#EEEE77",
     selectedClue,
     style,
+    onClueSelect,
 }: ClueListProps) {
     const containerStyle = {
         ...style,
@@ -19,19 +21,25 @@ export function ClueList({
         gap: "30px"
     };
 
+    function clickCallback(index: number) {
+        return () => onClueSelect(index);
+    }
+
     return <div style={containerStyle}>
         <div>
             <h2>Across</h2>
-            <ul style={{ listStyleType: "none", padding: "0px" }}> {
+            <ul style={{ listStyleType: "none", padding: "0px" }} > {
                 entries.across
                     .sort((a, b) => a.clueNumber - b.clueNumber)
                     .map((clue) =>
                         <li style={{
-                            backgroundColor:
-                                clue.clueNumber === selectedClue &&
-                                highlightColor,
-                            borderRadius: "5px",
-                        }}>
+                                backgroundColor:
+                                    clue.clueNumber === selectedClue &&
+                                    highlightColor,
+                                borderRadius: "5px",
+                            }}
+                            onClick={clickCallback(clue.clueNumber)}
+                        >
                             {clue.clueNumber}. {clue.clue}
                         </li>
                     )
@@ -44,11 +52,13 @@ export function ClueList({
                     .sort((a, b) => a.clueNumber - b.clueNumber)
                     .map((clue) =>
                         <li style={{
-                            backgroundColor:
-                                clue.clueNumber === selectedClue &&
-                                highlightColor,
-                            borderRadius: "5px",
-                        }}>
+                                backgroundColor:
+                                    clue.clueNumber === selectedClue &&
+                                    highlightColor,
+                                borderRadius: "5px",
+                            }}
+                            onClick={clickCallback(clue.clueNumber)}
+                        >
                             {clue.clueNumber}. {clue.clue}
                         </li>
                     )

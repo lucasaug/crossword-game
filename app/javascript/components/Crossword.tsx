@@ -54,6 +54,9 @@ export function Crossword({
             entries={entries}
             style={ClueListStyle}
             selectedClue={selectedClue}
+            onClueSelect={(clueNumber) => {
+                setSelectedClue(clueNumber)
+            }}
         />
     </div>
 }
