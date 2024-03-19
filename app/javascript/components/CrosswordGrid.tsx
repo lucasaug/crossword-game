@@ -17,6 +17,9 @@ export interface CrosswordGridProps {
     entries: CrosswordEntrySet,
     width: number,
     height: number,
+    position: GridPosition,
+    direction: Direction,
+    onCellChange?: React.ChangeEvent<HTMLInputElement>,
     cellSize: string,
     gapSize: string,
     fontSize: string,
@@ -24,7 +27,6 @@ export interface CrosswordGridProps {
     emptyCellColor: string,
     letterCellColor: string,
     highlightColor: string,
-    onCellChange?: React.ChangeEvent<HTMLInputElement>,
 };
 
 enum GridActionType {
@@ -120,6 +122,9 @@ export function CrosswordGrid({
     entries,
     width,
     height,
+    position,
+    direction,
+    onCellChange,
     cellSize="60px",
     gapSize="5px",
     fontSize="32px",
@@ -127,21 +132,10 @@ export function CrosswordGrid({
     emptyCellColor="#7755CC",
     letterCellColor="#EEEEFF",
     highlightColor="#EEEE77",
-    onCellChange
 }: CrosswordGridProps) {
-    let firstDirection = Direction.HORIZONTAL;
-    let firstCell = entries.across.find((entry) => entry.clueNumber === 1);
-    if (!firstCell) {
-        firstDirection = Direction.VERTICAL;
-        firstCell = entries.down.find((entry) => entry.clueNumber === 1);
-    }
-
     const [gridArray, dispatch] = useReducer(
         updateGrid, { entries, width, height }, createInitialGrid
     );
-
-    const [direction, setDirection] = useState<Direction>(firstDirection);
-    const [position, setPosition] = useState<GridPosition>(firstCell?.startPosition);
 
     const GridStyle = {
         padding: gapSize,
@@ -257,9 +251,6 @@ export function CrosswordGrid({
             }
 
             if (newPosition !== position || newDirection !== direction) {
-                setPosition(newPosition);
-                setDirection(newDirection);
-
                 const { x: newX, y: newY } = newPosition;
 
                 let clueNumber = gridArray[newX][newY].
@@ -291,7 +282,6 @@ export function CrosswordGrid({
                 let newDirection = Direction.HORIZONTAL;
 
                 if (position.x != x || position.y != y) {
-                    setPosition({ x: x, y: y })
                     if (cell.horizontalClue)
                         newDirection = Direction.HORIZONTAL;
                     else if (cell.verticalClue)
@@ -304,8 +294,6 @@ export function CrosswordGrid({
                             newDirection = Direction.HORIZONTAL;
                     }
                 }
-
-                setDirection(newDirection);
 
                 if (
                     x !== position.x ||
