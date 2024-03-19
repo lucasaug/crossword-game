@@ -95,7 +95,6 @@ export function Crossword({
                 const { startPosition: newPosition, direction: newDirection } =
                     clueNumberToInitialPosition[clueNumber];
 
-                debugger;
                 setPosition(newPosition);
                 setDirection(newDirection);
                 setSelectedClue(clueNumber)
