@@ -1,10 +1,10 @@
 class CreateCrosswordInstances < ActiveRecord::Migration[7.1]
   def change
     create_table :crossword_instances do |t|
-      t.json :across
-      t.json :down
-      t.integer :width
-      t.integer :height
+      t.json :across, default: {}
+      t.json :down, default: {}
+      t.integer :width, null: false
+      t.integer :height, null: false
 
       t.timestamps
     end

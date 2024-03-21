@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  namespace :api do
+    namespace :v1 do
+      get 'crossword_indices/index'
+      get 'crossword_indices/create'
+      get 'crossword_indices/show'
+      get 'crossword_indices/destroy'
+    end
+  end
   root 'homepage#index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
