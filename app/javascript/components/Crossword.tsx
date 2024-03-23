@@ -1,5 +1,5 @@
 import React from "react";
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Direction, GridPosition } from './Cell';
 import { ClueList } from './ClueList';
@@ -23,10 +23,9 @@ const ClueListStyle = {
     display: "inline",
 };
 
+const CROSSWORD_PATH: string = "/api/v1/random";
+
 export function Crossword({
-    entries,
-    width,
-    height,
     cellSize,
     gapSize,
     fontSize,
@@ -35,6 +34,27 @@ export function Crossword({
     letterCellColor,
     highlightColor,
 }: CrosswordProps) {
+    const [width, setWidth] = useState(10);
+    const [height, setHeight] = useState(10);
+    const [entries, setEntries] = useState({ across: [], down: [] });
+
+    useEffect(() => {
+        fetch(CROSSWORD_PATH)
+            .then((res) => {
+                if (res.ok) {
+                    return res.json();
+                }
+                throw new Error("Network response was not ok.");
+            })
+            .then((res) => {
+                const { across, down, width, height } = res;
+
+                setWidth(width);
+                setHeight(height);
+                setEntries({ across, down });
+            });
+    }, [])
+
     let firstDirection = Direction.HORIZONTAL;
     let firstCell = entries.across.find((entry) => entry.clueNumber === 1);
     if (!firstCell) {
@@ -63,12 +83,14 @@ export function Crossword({
 
     const [direction, setDirection] = useState<Direction>(firstDirection);
     const [position, setPosition] = useState<GridPosition>(
-        firstCell?.startPosition
+        firstCell?.startPosition ?? { x: 1, y: 1 }
     );
     const [selectedClue , setSelectedClue] = useState<number>(1);
 
+    const key = JSON.stringify(entries);
     return <div style={{ display: "flex", gap: "20px" }}>
         <CrosswordGrid
+            key={key}
             entries={entries}
             width={width}
             height={height}
