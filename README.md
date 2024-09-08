@@ -1,3 +1,3 @@
 # Crossword Game
 
-A crossword game written in Ruby on Rails an React.
+A crossword game written in Ruby on Rails and React.
